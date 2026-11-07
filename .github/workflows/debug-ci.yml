@@ -1,0 +1,11 @@
+name: Debug E2E
+on: workflow_dispatch
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          ./setup.sh || true
+          docker compose logs sandbox-runner
+          docker inspect rce-sandbox-runner | jq -r '.[0].State'
