@@ -66,7 +66,7 @@ jobs:
             -t ghcr.io/${{ github.repository }}/sandbox-runner-direct:latest .
 
       - name: Install Trivy
-        uses: aquasecurity/trivy-action@0.29.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ghcr.io/${{ github.repository }}/sandbox-runner-direct:${{ steps.lock.outputs.short_sha }}-ja1
           format: 'table'
