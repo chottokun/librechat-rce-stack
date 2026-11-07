@@ -13,3 +13,7 @@
 # ここには上流に含まれない独自追加分のみを記述します。
 # 閉域網グラフ描画のため、IPAexフォント同梱の japanize-matplotlib を初期登録。
 japanize-matplotlib==1.1.3
+
+# セキュリティ修正（Trivy CVE-2025-47273, GHSA-hq85-5cpj-mr62）
+setuptools>=78.1.1
+uv>=0.13.4

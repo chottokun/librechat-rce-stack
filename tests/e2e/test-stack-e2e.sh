@@ -52,15 +52,29 @@ if [[ -n "${RUNNER_CONTAINER}" ]]; then
     else
         PYTHON_BIN="python3"
     fi
+    log_info "Verifying japanize-matplotlib integration..."
     docker exec "${RUNNER_CONTAINER}" "${PYTHON_BIN}" -c "
 import japanize_matplotlib
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
-ax.set_title('日本語テストグラフ')
-fig.savefig('/tmp/test_ja.png')
-print('SUCCESS: japanize_matplotlib imported and rendered Japanese chart cleanly')
+ax.set_title('日本語テストグラフ (japanize-matplotlib)')
+fig.savefig('/tmp/test_ja_japanize.png')
+print('SUCCESS: japanize_matplotlib rendered Japanese chart cleanly')
 "
-    log_success "PASS: Sandbox runner rendered Japanese chart with zero font warnings"
+    log_success "PASS: Sandbox runner rendered Japanese chart via japanize-matplotlib"
+
+    log_info "Verifying native OS-level Japanese font (Noto Sans CJK JP)..."
+    docker exec "${RUNNER_CONTAINER}" "${PYTHON_BIN}" -c "
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+# Noto Sans CJK JP または IPAexGothic のフォント存在確認
+fonts = [f.name for f in fm.fontManager.ttflist]
+ja_fonts = [name for name in fonts if any(k in name.lower() for k in ['noto', 'ipa', 'cjk', 'gothic', 'mincho', 'japanize'])]
+if not ja_fonts:
+    raise RuntimeError('No Japanese fonts found in system font manager!')
+print(f'SUCCESS: Found Japanese fonts in system: {ja_fonts[:3]}')
+"
+    log_success "PASS: Native Japanese font detection verified"
 fi
 
 log_success "ALL E2E INTEGRATION TESTS PASSED CLEANLY!"

@@ -1,12 +1,3 @@
----
-type: concept
-title: LibreChat RCE Stack
-description: One-command production-ready LibreChat and Code Interpreter (RCE) stack in an isolated multi-tier network with Ed25519 JWT auth and auto-tracking upstream.
-generated: false
-status: active
-tags: [readme, librechat, rce, sandbox, docker, security]
----
-
 # LibreChat RCE Stack
 
 [![CI](https://github.com/chottokun/librechat-rce-stack/actions/workflows/ci.yml/badge.svg)](https://github.com/chottokun/librechat-rce-stack/actions/workflows/ci.yml)
@@ -21,27 +12,71 @@ tags: [readme, librechat, rce, sandbox, docker, security]
 ## 日本語
 
 ### 概要
-**LibreChat RCE Stack** は、堅牢な3層隔離ネットワーク設計を基盤とし、公式 GHCR コンテナイメージと Ed25519 非対称鍵 JWT 認証を統合した、ワンコマンド起動対応のエンタープライズ・自閉環境向け AI プラットフォームです。
+**LibreChat RCE Stack** は、オープンソースの AI チャットインターフェース「LibreChat」と、安全なコード実行機能「Code Interpreter」を統合して構築するための Docker Compose 構成です。
 
-- **ワンコマンド起動 (`./setup.sh`)**: 暗号論的乱数シークレット、Ed25519 JWT/マニフェスト鍵ペア、自己署名SSL証明書の初回自動生成・冪等保持。
-- **公式イメージ + ゼロビルド運用**: Code Interpreter の中核5サービスは上流公式 GHCR イメージ（`sha-` 固定）を直接 pull。
-- **日本語グラフ描画対応 Sandbox (案D)**: IPAex フォント同梱の `japanize-matplotlib` を事前組み込みした Sandbox Runner を GitHub Actions CI でビルドし、自前 GHCR から配信。
-- **3層完全分離ネットワーク**: `public-frontend`（Nginx/Web層）、`rce-backend`（API連携層）、`rce-isolated`（外部通信遮断・`internal: true` の実行層）。
-- **ゼロトラスト認証**: 廃止推奨の `LOCAL_MODE=true`（認証バイパス）を排除し、LibreChat が発行する短命 Ed25519 Bearer JWT（`librechat-jwt`）でセッション・ユーザー単位の完全分離を実現。
-- **継続的セキュリティ & 上流自動追従**: CI での Trivy スキャン・SBOM 生成・Cosign 署名、および `upstream.lock` による上流コミットの自動検知 PR ワークフロー。
+既存環境の知見（Nginx リバースプロキシ、MinIO オブジェクトストレージ、Redis、3層隔離ネットワーク）を整理・再構築し、上流の公式イメージ利用、Ed25519 JWT 相互認証の自動構成、日本語フォント内包ランナーの配信に対応しています。
 
-### クイックスタート
+### 主な特徴
+
+- **ワンコマンド起動 (`./setup.sh`)**: 暗号シークレット、Ed25519 JWT 鍵ペア（JWK/JWKS）、マニフェスト鍵、自己署名証明書を自動生成してコンテナを起動します。
+- **KVM / 非KVM 自動判定**: ホストの `/dev/kvm` の有無を検知し、KVM MicroVM 構成または NsJail Direct 構成を自動選択します。
+- **公式コンテナイメージの活用**: Code Interpreter の中核サービス（API, Worker, File Server, Egress Gateway, Tool Call Server）は上流公式 GHCR イメージ（コミット SHA 固定）を利用します。
+- **日本語グラフ描画対応**: `japanize-matplotlib`（IPAex フォント内包）を追加した Sandbox Runner を GitHub Actions CI でビルドし、GHCR 経由で提供します。
+- **3層ネットワーク分離**:
+  - `public-frontend`: Nginx および LibreChat Web UI 間の通信層
+  - `rce-backend`: LibreChat API と Code API 間の連携層
+  - `rce-isolated`: 外部通信を遮断（`internal: true`）したサンドボックス実行層
+- **Ed25519 相互認証**: LibreChat と Code API 間の通信は短命な Ed25519 Bearer JWT（`librechat-jwt`）で認証されます。
+- **サプライチェーン対策**:
+  - `upstream.lock` によるイメージタグと上流コミット SHA の一元固定
+  - GitHub Actions での Trivy による脆弱性スキャン（定期実行およびビルド時）
+  - Dependabot による GitHub Actions 定期アップデート
+  - 上流同期スクリプト（`scripts/upstream-sync.sh`）による更新検知 PR の自動作成
+
+### 動作要件
+
+- OS: Linux（Ubuntu 22.04 / 24.04 等）または macOS（Docker Desktop）
+- ツール: Docker 24.0+、Docker Compose v2.20+、Bash、OpenSSL
+- メモリ: 4GB 以上推奨（KVM MicroVM 起動時は 6GB 以上推奨）
+- 仮想化: `/dev/kvm` が利用可能な場合はハードウェア仮想化（MicroVM）が有効になります。利用できない場合は NsJail Direct モードで起動します。
+
+### セットアップ手順
 
 ```bash
-# 1. クローン
+# 1. リポジトリをクローン
 git clone https://github.com/chottokun/librechat-rce-stack.git
 cd librechat-rce-stack
 
-# 2. ワンコマンドセットアップ（KVM自動判定・鍵自動生成・証明書発行・コンテナ起動）
+# 2. セットアップスクリプトを実行
 ./setup.sh
 
 # 3. ブラウザでアクセス
 # https://localhost
+```
+
+#### スクリプトのオプション
+
+| オプション | 説明 |
+| :--- | :--- |
+| `--domain <FQDN>` | 公開ドメイン名（デフォルト: `localhost`）。SAN 付き証明書を発行します。 |
+| `--build` | GHCR からの pull の代わりに、ローカル環境で Sandbox Runner を自前ビルドします。 |
+| `--rotate <target>` | 指定した暗号鍵を再生成します（`all`, `jwt`, `manifest`, `JWT_SECRET` 等）。 |
+| `--no-up` | 設定ファイル、秘密情報、証明書の生成のみを行い、コンテナ起動は行いません。 |
+| `-h, --help` | ヘルプメッセージを表示します。 |
+
+### ディレクトリ構成
+
+```text
+├── compose.yaml          # 基本 Docker Compose 定義
+├── compose.kvm.yaml      # KVM MicroVM 用オーバーライド
+├── compose.direct.yaml   # NsJail Direct 用オーバーライド
+├── upstream.lock         # 上流コミット SHA およびイメージの固定ファイル
+├── setup.sh              # 自動セットアップ & 起動スクリプト
+├── config/               # Nginx および LibreChat の設定
+├── sandbox/              # Sandbox Runner ビルドスクリプト & 追加パッケージパッチ
+├── scripts/              # 鍵生成・証明書発行・同期・ヘルスチェック用スクリプト
+├── tests/                # 単体テスト (unit) および結合テスト (e2e)
+└── docs/                 # 詳細仕様・アーキテクチャ・運用ドキュメント
 ```
 
 ---
@@ -50,14 +85,33 @@ cd librechat-rce-stack
 ## English
 
 ### Overview
-**LibreChat RCE Stack** is a production-grade, one-command deployment of LibreChat and the Sandboxed Code Interpreter (RCE), built upon an enterprise 3-tier isolated network architecture with official GHCR images and Ed25519 JWT zero-trust authentication.
+**LibreChat RCE Stack** provides an automated Docker Compose deployment for LibreChat and its sandboxed Code Interpreter execution environment.
 
-- **One-Command Setup (`./setup.sh`)**: Auto-provisions cryptographic secrets, Ed25519 JWT/manifest key pairs, and SSL certificates idempotently.
-- **Official GHCR Images**: Core Code Interpreter services run directly from upstream immutable `sha-` images.
-- **Japanese-Ready Sandbox Runner**: Pre-bakes `japanize-matplotlib` (with IPAex fonts) via GitHub Actions CI and delivers prebuilt images from GHCR.
-- **3-Tier Network Isolation**: `public-frontend` (Nginx/Web), `rce-backend` (API bridge), and `rce-isolated` (`internal: true`, fully air-gapped execution plane).
-- **Zero-Trust JWT Auth**: Eliminates unauthenticated `LOCAL_MODE=true`, enforcing per-request Ed25519 signed JWTs (`librechat-jwt`).
-- **Continuous Security**: Trivy scanning, SBOM, Cosign keyless signatures, and automated upstream tracking via `upstream.lock`.
+It brings together an isolated 3-tier network, official upstream container images, Ed25519 JWT mutual authentication, and pre-baked Japanese font support in an automated setup script.
+
+### Key Features
+
+- **One-Command Setup (`./setup.sh`)**: Automatically provisions cryptographic secrets, Ed25519 JWT key pairs (JWK/JWKS), execution manifest keys, and self-signed certificates idempotently.
+- **Auto-Detection for Virtualization**: Detects `/dev/kvm` and selects either KVM MicroVM mode or NsJail Direct container isolation mode.
+- **Upstream Official Images**: Runs Code Interpreter core services (API, Worker, File Server, Egress Gateway, Tool Call Server) from official GHCR images pinned by commit SHA.
+- **Japanese Font Support**: Includes `japanize-matplotlib` (with embedded IPAex fonts) pre-baked into the Sandbox Runner image and distributed via GHCR.
+- **3-Tier Network Architecture**:
+  - `public-frontend`: Ingress from Nginx to LibreChat UI
+  - `rce-backend`: Bridge between LibreChat API and Code API
+  - `rce-isolated`: Sandboxed runtime layer (`internal: true`) with no direct external access
+- **Ed25519 Mutual Auth**: Authenticates API requests between LibreChat and Code API with ephemeral Ed25519 Bearer JWTs (`librechat-jwt`).
+- **Supply Chain Security**:
+  - Immutable commit SHAs and container image digests pinned in `upstream.lock`
+  - Automated Trivy vulnerability scans in CI and scheduled workflows
+  - Dependabot updates for GitHub Actions
+  - Upstream sync script (`scripts/upstream-sync.sh`) to detect and propose upstream updates via PR
+
+### Requirements
+
+- OS: Linux (Ubuntu 22.04 / 24.04 recommended) or macOS (Docker Desktop)
+- Tools: Docker 24.0+, Docker Compose v2.20+, Bash, OpenSSL
+- RAM: 4GB minimum (6GB+ recommended with KVM MicroVM)
+- Virtualization: Access to `/dev/kvm` activates MicroVM hardware virtualization; otherwise NsJail Direct mode is used.
 
 ### Quick Start
 
@@ -65,7 +119,7 @@ cd librechat-rce-stack
 git clone https://github.com/chottokun/librechat-rce-stack.git
 cd librechat-rce-stack
 ./setup.sh
-# Open https://localhost
+# Open https://localhost in your browser
 ```
 
 ---
