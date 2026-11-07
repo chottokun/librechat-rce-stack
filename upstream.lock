@@ -33,5 +33,5 @@ LIBRECHAT_IMAGE=ghcr.io/danny-avila/librechat:v0.8.8-rc4
 NGINX_IMAGE=nginx:1.27-alpine
 MONGODB_IMAGE=mongo:7.0
 REDIS_IMAGE=redis:7.4-alpine
-MINIO_IMAGE=quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-MINIO_MC_IMAGE=quay.io/minio/mc:latest
+MINIO_IMAGE=pgsty/minio:latest
+MINIO_MC_IMAGE=pgsty/mc:latest
