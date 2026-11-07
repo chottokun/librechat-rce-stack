@@ -1,0 +1,47 @@
+name: CI / Lint & Static Validation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-checks:
+    name: Lint & Unit Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Lint Tools
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          npm install -g markdownlint-cli
+
+      - name: ShellCheck Scripts
+        run: |
+          shellcheck -x setup.sh sandbox/build.sh scripts/*.sh scripts/lib/*.sh tests/unit/*.sh
+
+      - name: MarkdownLint
+        run: |
+          markdownlint '**/*.md' --ignore 'node_modules/**'
+
+      - name: Run Unit Tests (Idempotency & Ed25519)
+        run: |
+          bash tests/unit/test-generate-secrets.sh
+
+      - name: Validate Compose Configs
+        run: |
+          cp .env.example .env
+          bash scripts/generate-secrets.sh
+          # KVM compose config syntax validation
+          docker compose --env-file upstream.lock --env-file .env -f compose.yaml -f compose.kvm.yaml config > /dev/null
+          # Direct compose config syntax validation
+          docker compose --env-file upstream.lock --env-file .env -f compose.yaml -f compose.direct.yaml config > /dev/null
+          # Build compose config syntax validation
+          docker compose --env-file upstream.lock --env-file .env -f compose.yaml -f compose.direct.yaml -f compose.build.yaml config > /dev/null

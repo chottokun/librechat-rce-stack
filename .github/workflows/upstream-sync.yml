@@ -1,0 +1,56 @@
+name: Upstream Sync (Automated PR)
+
+on:
+  schedule:
+    # 毎日 AM 4:00 (JST 13:00) に上流更新を自動巡回チェック
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-upstream:
+    name: Check & Create Upstream Sync PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Upstream Sync Script
+        id: sync
+        run: |
+          OLD_SHA=$(grep -E "^CODEAPI_UPSTREAM_SHA=" upstream.lock | cut -d'=' -f2-)
+          bash scripts/upstream-sync.sh
+          NEW_SHA=$(grep -E "^CODEAPI_UPSTREAM_SHA=" upstream.lock | cut -d'=' -f2-)
+          if [ "${OLD_SHA}" != "${NEW_SHA}" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "old_sha=${OLD_SHA}" >> "$GITHUB_OUTPUT"
+            echo "new_sha=${NEW_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create Pull Request for Upstream Update
+        if: steps.sync.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(upstream): sync code-interpreter to ${{ steps.sync.outputs.new_sha }}"
+          branch: "automation/upstream-sync-${{ steps.sync.outputs.new_sha }}"
+          title: "chore(upstream): update code-interpreter to ${{ steps.sync.outputs.new_sha }}"
+          body: |
+            ## Automated Upstream Update
+
+            Upstream `LibreChat-AI/code-interpreter` has new commits on `main`.
+
+            - **Previous SHA**: `${{ steps.sync.outputs.old_sha }}`
+            - **New SHA**: `${{ steps.sync.outputs.new_sha }}`
+            - **Patch Status**: `sandbox/patches/0001-ja-extras.patch` applied cleanly.
+
+            CI will build, security scan with Trivy, and verify the new stack automatically.
+            Please review and merge manually.
+          labels: |
+            dependencies
+            upstream-sync

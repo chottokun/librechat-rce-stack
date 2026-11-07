@@ -1,0 +1,37 @@
+# ==============================================================================
+# Upstream Lockfile / 単一情報源
+# ==============================================================================
+# 本ファイルは、LibreChat 本体および上流 code-interpreter のコミットSHA・
+# コンテナイメージの Digest を一元管理します。
+# 依存更新は scripts/upstream-sync.sh または GitHub Actions が自動で検証・更新します。
+#
+# 更新日: 2026-11-07
+# ==============================================================================
+
+# 上流 code-interpreter (LibreChat-AI/code-interpreter)
+CODEAPI_UPSTREAM_REPO=https://github.com/LibreChat-AI/code-interpreter.git
+CODEAPI_UPSTREAM_SHA=2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_IMAGE_TAG=sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+
+# 上流公式 GHCR イメージ（5サービス）
+CODEAPI_API_IMAGE=ghcr.io/librechat-ai/code-interpreter-api:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_WORKER_IMAGE=ghcr.io/librechat-ai/code-interpreter-worker:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_FILE_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-file-server:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_EGRESS_GATEWAY_IMAGE=ghcr.io/librechat-ai/code-interpreter-egress-gateway:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_TOOL_CALL_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-tool-call-server:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+
+# 自前ビルド Sandbox Runner（GitHub Actions CI より GHCR へ自動公開）
+# KVM 対応ホスト用 (MicroVM)
+SANDBOX_RUNNER_KVM_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:2fa9f0d-ja1
+# 非KVM ホスト用 (NsJail Direct)
+SANDBOX_RUNNER_DIRECT_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:2fa9f0d-ja1
+
+# LibreChat コア（Ed25519 JWT 対応済み 安定版）
+LIBRECHAT_IMAGE=ghcr.io/danny-avila/librechat:v0.8.8-rc4
+
+# インフラ基底イメージ
+NGINX_IMAGE=nginx:1.27-alpine
+MONGODB_IMAGE=mongo:7.0
+REDIS_IMAGE=redis:7.4-alpine
+MINIO_IMAGE=quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+MINIO_MC_IMAGE=quay.io/minio/mc:latest

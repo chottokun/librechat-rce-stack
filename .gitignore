@@ -1,0 +1,33 @@
+# Environment & Secret files
+.env
+.env.local
+.env.*.local
+*.key
+*.crt
+*.pem
+
+# Certificates generated at runtime
+config/nginx/certs/*
+!config/nginx/certs/.gitkeep
+
+# Temporary / Build artifacts
+/tmp/
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Docker Compose overrides for local runs
+compose.override.yaml
+docker-compose.override.yml
+
+# Sandbox build artifacts
+sandbox/.upstream-cache/
+sandbox/.build/
+*.img
+
+# Node / Python dev artifacts
+node_modules/
+__pycache__/
+*.py[cod]
+.venv/

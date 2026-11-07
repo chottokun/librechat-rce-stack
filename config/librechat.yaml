@@ -1,0 +1,48 @@
+# ==============================================================================
+# LibreChat 設定ファイル (librechat.yaml)
+# ==============================================================================
+# Code Interpreter (RCE) 連携および LLM エンドポイントを定義します。
+# ==============================================================================
+
+version: 1.1.5
+
+cache: true
+
+endpoints:
+  # Google Gemini
+  google:
+    title: "Google Gemini"
+    models:
+      - "gemini-2.0-flash"
+      - "gemini-1.5-pro"
+      - "gemini-1.5-flash"
+
+  # OpenAI
+  openAI:
+    title: "OpenAI"
+    models:
+      - "gpt-4o"
+      - "gpt-4o-mini"
+      - "o1"
+      - "o3-mini"
+
+  # カスタム・外部 LLM (さくらインターネットAI / OpenAI互換プロキシ等)
+  custom:
+    - name: "Sakura-AI"
+      apiKey: "${EXTERNAL_API_KEY}"
+      baseURL: "${EXTERNAL_API_URL}"
+      models:
+        default: ["preview/Qwen3.6-35B-A3B"]
+        fetch: true
+      titleConvo: true
+      titleModel: "preview/Qwen3.6-35B-A3B"
+      modelDisplayLabel: "Sakura AI"
+
+# エージェントおよび Code Interpreter 機能の有効化
+interface:
+  runCode: true
+  artifacts: true
+
+actions:
+  allowedDomains:
+    - "code-api"

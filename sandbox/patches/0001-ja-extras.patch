@@ -1,0 +1,14 @@
+diff --git a/docker/package-init.sh b/docker/package-init.sh
+index 7551504..c978fa5 100644
+--- a/docker/package-init.sh
++++ b/docker/package-init.sh
+@@ -299,6 +299,9 @@ if [ -f "$PIP_PATH" ]; then
+         gpxpy; then
+         echo "ERROR: Python package installation failed"
+         INSTALL_FAILED=true
++    elif [ -f "${SCRIPT_DIR}/requirements-extra.txt" ] && ! "${PYTHON_INSTALL_CMD[@]}" -r "${SCRIPT_DIR}/requirements-extra.txt"; then
++        echo "ERROR: Extra Python packages installation failed"
++        INSTALL_FAILED=true
+     else
+         PYTHON_PACKAGES_INSTALLED=true
+     fi

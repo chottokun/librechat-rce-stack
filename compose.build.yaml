@@ -1,0 +1,10 @@
+# ==============================================================================
+# LibreChat RCE Stack - ローカルビルド用オーバーライド (--build オプション用)
+# ==============================================================================
+
+services:
+  sandbox-runner:
+    build:
+      context: sandbox
+      dockerfile: Dockerfile
+      target: sandbox-runner-${KVM_ENABLED:-true}-baked

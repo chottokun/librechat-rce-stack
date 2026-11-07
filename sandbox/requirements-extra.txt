@@ -1,0 +1,15 @@
+# 追加Pythonライブラリ定義
+#
+# 注意:
+#   上流 code-interpreter の package-init には以下が標準で組み込まれています:
+#   numpy, pandas, scipy, statsmodels, pillow, scikit-learn, scikit-image,
+#   networkx, sympy, wordcloud, pypdf2, python-docx, imageio, seaborn,
+#   plotly, beautifulsoup4, tabulate, xlrd, numba, patsy, numexpr, pyarrow,
+#   chdb, markitdown, python-pptx, xlsxwriter, docx2python, docxtpl,
+#   mammoth, pdf2image, pdfminer, reportlab, opencv-python-headless,
+#   svglib, cairosvg, exifread, hachoir, python-barcode, qrcode, fonttools,
+#   pytesseract, rasterio, rioxarray, geopandas, folium など
+#
+# ここには上流に含まれない独自追加分のみを記述します。
+# 閉域網グラフ描画のため、IPAexフォント同梱の japanize-matplotlib を初期登録。
+japanize-matplotlib==1.1.3
