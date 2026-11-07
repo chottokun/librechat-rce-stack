@@ -7,42 +7,11 @@
 services:
   sandbox-runner:
     image: ${SANDBOX_RUNNER_KVM_IMAGE:-ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:2fa9f0d-ja1}
-    container_name: rce-sandbox-runner
-    restart: unless-stopped
     privileged: false
     devices:
       - ${KVM_DEVICE_PATH:-/dev/kvm}:/dev/kvm
     environment:
       - KVM_ENABLED=true
-      - LAUNCHER_PACKAGES_HOST=/disabled-host-packages
-      - CODEAPI_HARDENED_SANDBOX_MODE=true
-      - EGRESS_GATEWAY_URL=http://egress-gateway:3190
-      - SANDBOX_PACKAGES_DIRECTORY=/pkgs
-      - SANDBOX_LOG_LEVEL=INFO
-      - SANDBOX_OUTPUT_MAX_SIZE=${SANDBOX_OUTPUT_MAX_SIZE:-65536}
-      - SANDBOX_MAX_CONCURRENT_JOBS=8
-      - SANDBOX_PER_JOB_UIDS=true
-      - SANDBOX_JOB_UID_BASE=200000
-      - SANDBOX_JOB_GID_BASE=200000
-      - SANDBOX_WORKSPACE_REAPER_MAX_AGE_SECONDS=3600
-      - SANDBOX_RUN_TIMEOUT=${SANDBOX_RUN_TIMEOUT:-300000}
-      - SANDBOX_RUN_CPU_TIME=${SANDBOX_RUN_CPU_TIME:-300000}
-      - SANDBOX_COMPILE_TIMEOUT=30000
       - LAUNCHER_VCPUS=2
       - LAUNCHER_RAM_MIB=2048
       - LAUNCHER_LOG_LEVEL=3
-      - SANDBOX_ALLOWED_LOCAL_NETWORK_PORT=3190
-      - SANDBOX_FORWARD_TARGET=egress-gateway:3190
-      - SANDBOX_REQUIRE_EGRESS_MANIFEST=true
-      - SANDBOX_EXECUTION_MANIFEST_PUBLIC_KEY=${SANDBOX_EXECUTION_MANIFEST_PUBLIC_KEY:?run ./setup.sh}
-    depends_on:
-      egress-gateway:
-        condition: service_healthy
-    networks:
-      - rce-isolated
-    healthcheck:
-      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:2000/api/v2/health').then(r=>process.exit(r.ok?0:1))\" 2>/dev/null || /usr/local/bin/sandbox-runner-healthcheck.sh"]
-      interval: 5s
-      timeout: 3s
-      retries: 60
-      start_period: 20s

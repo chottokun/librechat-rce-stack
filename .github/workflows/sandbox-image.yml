@@ -49,7 +49,12 @@ jobs:
           git fetch --depth 1 origin ${{ steps.lock.outputs.upstream_sha }}
           git checkout ${{ steps.lock.outputs.upstream_sha }}
           cp ../sandbox/requirements-extra.txt docker/
-          git apply ../sandbox/patches/0001-ja-extras.patch
+          for patch_file in ../sandbox/patches/*.patch; do
+            if [ -f "$patch_file" ]; then
+              echo "Applying $(basename "$patch_file")..."
+              git apply "$patch_file"
+            fi
+          done
 
       - name: Build KVM Sandbox Runner Image
         run: |
@@ -61,7 +66,7 @@ jobs:
       - name: Build Direct Sandbox Runner Image
         run: |
           cd upstream-src
-          docker build -f api/Dockerfile --target sandbox-runner-baked \
+          docker build -f api/Dockerfile --target sandbox-runner-direct-baked \
             -t ghcr.io/${{ github.repository }}/sandbox-runner-direct:${{ steps.lock.outputs.short_sha }}-ja1 \
             -t ghcr.io/${{ github.repository }}/sandbox-runner-direct:latest .
 

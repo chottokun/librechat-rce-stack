@@ -1,0 +1,13 @@
+diff --git a/api/Dockerfile b/api/Dockerfile
+index 3624e5a..f8e32c1 100644
+--- a/api/Dockerfile
++++ b/api/Dockerfile
+@@ -321,3 +321,8 @@ FROM sandbox-runner AS sandbox-runner-false
+ # Keep the safe KVM image as the Dockerfile default. Direct NsJail and legacy
+ # virtio-fs deployments can still select --target sandbox-runner explicitly.
+ FROM sandbox-runner-true AS sandbox-runner-default
++
++# Direct NsJail runner with baked runtime packages (for hosts without KVM)
++FROM sandbox-runner-false AS sandbox-runner-direct-baked
++COPY --from=package-builder /pkgs /sandbox-rootfs/pkgs
++RUN rm -rf /host-packages

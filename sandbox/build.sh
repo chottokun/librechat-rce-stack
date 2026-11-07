@@ -44,17 +44,16 @@ log_info "Applying extra requirements & patches..."
 # requirements-extra.txt をビルドコンテキストへコピー
 cp "${SCRIPT_DIR}/requirements-extra.txt" "${BUILD_DIR}/code-interpreter/docker/"
 
-# package-init.sh への追加ライブラリ導入パッチ適用
-PATCH_FILE="${SCRIPT_DIR}/patches/0001-ja-extras.patch"
-if [[ -f "${PATCH_FILE}" ]]; then
-    (
-        cd "${BUILD_DIR}/code-interpreter"
-        git apply "${PATCH_FILE}"
-    )
-    log_success "Applied ${PATCH_FILE} cleanly"
-else
-    log_warn "No patch file found at ${PATCH_FILE}, building vanilla upstream"
-fi
+# パッチの適用
+for patch_file in "${SCRIPT_DIR}/patches/"*.patch; do
+    if [[ -f "${patch_file}" ]]; then
+        (
+            cd "${BUILD_DIR}/code-interpreter"
+            git apply "${patch_file}"
+        )
+        log_success "Applied $(basename "${patch_file}") cleanly"
+    fi
+done
 
 # Dockerfile 構築 & ビルド実行
 (
@@ -63,13 +62,15 @@ fi
     if [[ "${TARGET_MODE}" == "all" || "${TARGET_MODE}" == "kvm" ]]; then
         log_info "Building KVM-enabled Sandbox Runner (sandbox-runner-true)..."
         docker build -f api/Dockerfile --target sandbox-runner-true \
-            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:${UPSTREAM_SHA:0:7}-ja1" .
+            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:${UPSTREAM_SHA:0:7}-ja1" \
+            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:latest" .
     fi
     
     if [[ "${TARGET_MODE}" == "all" || "${TARGET_MODE}" == "direct" ]]; then
-        log_info "Building NsJail Direct Sandbox Runner (sandbox-runner-baked)..."
-        docker build -f api/Dockerfile --target sandbox-runner-baked \
-            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:${UPSTREAM_SHA:0:7}-ja1" .
+        log_info "Building NsJail Direct Sandbox Runner (sandbox-runner-direct-baked)..."
+        docker build -f api/Dockerfile --target sandbox-runner-direct-baked \
+            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:${UPSTREAM_SHA:0:7}-ja1" \
+            -t "ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:latest" .
     fi
 )
 

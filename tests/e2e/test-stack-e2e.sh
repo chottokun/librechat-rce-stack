@@ -42,9 +42,17 @@ log_success "PASS: CodeAPI strictly rejected unauthenticated request (HTTP ${COD
 
 log_info "=== E2E Test 4: Sandbox Runner 日本語フォント & 追加パッケージ検証 ==="
 # sandbox-runner コンテナ内で直接 python の japanize_matplotlib の import を検証
-RUNNER_CONTAINER=$(docker compose ps -q sandbox-runner)
+RUNNER_CONTAINER=$(docker compose ps -q sandbox-runner 2>/dev/null || true)
 if [[ -n "${RUNNER_CONTAINER}" ]]; then
-    docker exec "${RUNNER_CONTAINER}" python3 -c "
+    PYTHON_BIN=""
+    if docker exec "${RUNNER_CONTAINER}" test -f /sandbox-rootfs/pkgs/python/3.14.4/bin/python3; then
+        PYTHON_BIN="/sandbox-rootfs/pkgs/python/3.14.4/bin/python3"
+    elif docker exec "${RUNNER_CONTAINER}" test -f /pkgs/python/3.14.4/bin/python3; then
+        PYTHON_BIN="/pkgs/python/3.14.4/bin/python3"
+    else
+        PYTHON_BIN="python3"
+    fi
+    docker exec "${RUNNER_CONTAINER}" "${PYTHON_BIN}" -c "
 import japanize_matplotlib
 import matplotlib.pyplot as plt
 fig, ax = plt.subplots()
