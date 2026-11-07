@@ -34,7 +34,7 @@ jobs:
 
       - name: Create Pull Request for Upstream Update
         if: steps.sync.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "chore(upstream): sync code-interpreter to ${{ steps.sync.outputs.new_sha }}"
