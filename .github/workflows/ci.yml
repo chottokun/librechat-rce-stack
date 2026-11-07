@@ -45,3 +45,20 @@ jobs:
           docker compose --env-file upstream.lock --env-file .env -f compose.yaml -f compose.direct.yaml config > /dev/null
           # Build compose config syntax validation
           docker compose --env-file upstream.lock --env-file .env -f compose.yaml -f compose.direct.yaml -f compose.build.yaml config > /dev/null
+
+  e2e-integration:
+    name: Full Stack E2E Validation
+    runs-on: ubuntu-latest
+    needs: static-checks
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run One-Command Setup (Direct Mode)
+        run: |
+          ./setup.sh
+
+      - name: Run E2E Integration Test Suite
+        run: |
+          bash tests/e2e/test-stack-e2e.sh
