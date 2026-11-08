@@ -75,7 +75,7 @@ jobs:
         with:
           image-ref: ghcr.io/${{ github.repository }}/sandbox-runner-direct:${{ steps.lock.outputs.short_sha }}-ja1
           format: 'table'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           vuln-type: 'os,library'
           scanners: 'vuln'

@@ -1,7 +1,16 @@
 diff --git a/docker/package-init.sh b/docker/package-init.sh
-index 7551504..c978fa5 100644
+index 7551504..b5da227 100644
 --- a/docker/package-init.sh
 +++ b/docker/package-init.sh
+@@ -19,7 +19,7 @@ PYTHON_ALIAS="python${PYTHON_SITE_VERSION}"
+ # between installers) for packages with no version constraint in the list
+ # below — that's inherent to installing unpinned packages, not specific to uv.
+ PYTHON_PACKAGE_INSTALLER="${PYTHON_PACKAGE_INSTALLER:-uv}"
+-UV_VERSION="${UV_VERSION:-0.11.26}"
++UV_VERSION="${UV_VERSION:-0.13.4}"
+ NODE_VERSION="${NODE_VERSION:-24.22.1}"
+ BUN_VERSION="${BUN_VERSION:-1.4.4}"
+ BASH_PACKAGE_VERSION="${BASH_PACKAGE_VERSION:-5.2.0}"
 @@ -299,6 +299,9 @@ if [ -f "$PIP_PATH" ]; then
          gpxpy; then
          echo "ERROR: Python package installation failed"
