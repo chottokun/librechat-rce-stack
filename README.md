@@ -79,6 +79,12 @@ cd librechat-rce-stack
 └── docs/                 # 詳細仕様・アーキテクチャ・運用ドキュメント
 ```
 
+### ドキュメント一覧
+
+- **[ローカル実働テスト手順書 (Local Testing Guide)](docs/operations/local-testing.md)**: ローカル実機での疎通・エアギャップ遮断・日本語フォント描画等の検証手順
+- **[運用・保守ガイド (Maintenance Guide)](docs/operations/maintenance.md)**: 日常運用、シークレットローテーション、オフライン閉域展開、追加ライブラリ導入
+- **[セキュリティアーキテクチャ (Security Architecture)](docs/architecture/security.md)**: 3層分離ネットワーク、Ed25519 JWT 相互認証、サプライチェーン保護の詳細
+
 ---
 
 <a name="english"></a>
@@ -121,6 +127,12 @@ cd librechat-rce-stack
 ./setup.sh
 # Open https://localhost in your browser
 ```
+
+### Documentation
+
+- **[Local Testing Guide](docs/operations/local-testing.md)**: Step-by-step verification guide for local live testing, network isolation, and font rendering.
+- **[Operation & Maintenance Guide](docs/operations/maintenance.md)**: Daily operations, secret rotation, offline air-gap deployment, and custom package additions.
+- **[Security Architecture](docs/architecture/security.md)**: 3-tier network isolation, Ed25519 JWT mutual authentication, and supply-chain protections.
 
 ---
 
