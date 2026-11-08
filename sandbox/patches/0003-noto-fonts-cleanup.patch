@@ -1,12 +1,27 @@
 diff --git a/api/Dockerfile b/api/Dockerfile
-index 3624e5a..a1b2c3d 100644
+index e7dbcc4..606177f 100644
 --- a/api/Dockerfile
 +++ b/api/Dockerfile
-@@ -107,2 +107,3 @@ RUN apt-get update && \
+@@ -81,6 +81,7 @@ RUN mkdir -p /pkgs
+ 
+ COPY docker/python-runtime /python-runtime
+ COPY docker/package-init.sh /package-init.sh
++COPY docker/requirements-extra.txt* /
+ COPY javascript-packages.txt /javascript-packages.txt
+ RUN chmod +x /package-init.sh && FORCE_REBUILD=true /package-init.sh
+ 
+@@ -105,6 +106,7 @@ RUN apt-get update && \
+     poppler-utils \
+     fonts-dejavu \
      fonts-liberation \
 +    fonts-noto-cjk \
      libnl-route-3-200 \
-@@ -154,2 +155,3 @@ RUN bun run build
+     libprotobuf32 \
+     libffi8 \
+@@ -151,6 +153,7 @@ COPY shared /shared
+ COPY api/config ./config
+ 
+ RUN bun run build
 +RUN rm -rf /root/.bun
  
  RUN mkdir -p /pkgs /tmp/sandbox
