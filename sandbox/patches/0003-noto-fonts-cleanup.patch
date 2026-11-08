@@ -25,3 +25,4 @@ index e7dbcc4..606177f 100644
 +RUN rm -rf /root/.bun
  
  RUN mkdir -p /pkgs /tmp/sandbox
+ 
