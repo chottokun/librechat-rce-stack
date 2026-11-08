@@ -43,7 +43,7 @@ cd librechat-rce-stack
 ./setup.sh
 ```
 
-### セットアップスクリプトが自動実行する内容:
+### セットアップスクリプトが自動実行する内容
 1. **秘密鍵・公開鍵 JWKS の自動生成** (`.secrets/` 配下):
    - `jwt-private.pem` (Ed25519 署名鍵)
    - `jwt-jwks.json` (CodeAPI 検証用 JWKS)
@@ -111,17 +111,17 @@ Pythonを使って、1から100までの整数の2乗の合計を計算し、結
 ### テスト 2: 完全閉域・エアギャップ遮断（外部通信遮断テスト）
 サンドボックスが意図通り外部ネットワークから完全に遮断されていることを実証します。
 
-**プロンプト:**
-```text
-Pythonで次のコードを実行して、結果を教えてください。
+**チャット入力プロンプト:**
+> Pythonで次のコードを実行して、結果を教えてください。
+
 ```python
 import urllib.request
+
 try:
     response = urllib.request.urlopen("https://example.com", timeout=3)
     print("ONLINE:", response.status)
 except Exception as e:
     print("BLOCKED_SUCCESSFULLY:", type(e).__name__, e)
-```
 ```
 
 **検証ポイント:**
@@ -133,9 +133,8 @@ except Exception as e:
 ### テスト 3: 日本語フォント描画（Noto Sans CJK JP ネイティブ描画）
 **`japanize_matplotlib` を import しない状態**で、OS ネイティブの日本語フォント（Noto Sans CJK JP）によって日本語グラフが正常に描画されることを確認します。
 
-**プロンプト:**
-```text
-以下の Python コードを実行してグラフを表示してください。japanize_matplotlib は import せずに実行してください。
+**チャット入力プロンプト:**
+> 以下の Python コードを実行してグラフを表示してください。japanize_matplotlib は import せずに実行してください。
 
 ```python
 import matplotlib.pyplot as plt
@@ -152,7 +151,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 ```
-```
 
 **検証ポイント:**
 - チャット画面上に棒グラフの画像が出力されること。
@@ -163,9 +161,8 @@ plt.show()
 ### テスト 4: `japanize-matplotlib` 併用描画
 明示的に `japanize_matplotlib` を指定した場合も正常に動作することを確認します。
 
-**プロンプト:**
-```text
-以下の Python コードを実行して、円グラフを出力してください。
+**チャット入力プロンプト:**
+> 以下の Python コードを実行して、円グラフを出力してください。
 
 ```python
 import matplotlib.pyplot as plt
@@ -179,7 +176,6 @@ plt.figure(figsize=(6, 6))
 plt.pie(sizes, labels=labels, autopct='%1.1f%%', colors=colors, startangle=140)
 plt.title("システム構成要素比率")
 plt.show()
-```
 ```
 
 **検証ポイント:**
