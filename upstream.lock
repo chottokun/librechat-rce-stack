@@ -10,21 +10,21 @@
 
 # 上流 code-interpreter (LibreChat-AI/code-interpreter)
 CODEAPI_UPSTREAM_REPO=https://github.com/LibreChat-AI/code-interpreter.git
-CODEAPI_UPSTREAM_SHA=2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
-CODEAPI_IMAGE_TAG=sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_UPSTREAM_SHA=4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
+CODEAPI_IMAGE_TAG=sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
 
 # 上流公式 GHCR イメージ（5サービス）
-CODEAPI_API_IMAGE=ghcr.io/librechat-ai/code-interpreter-api:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
-CODEAPI_WORKER_IMAGE=ghcr.io/librechat-ai/code-interpreter-worker:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
-CODEAPI_FILE_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-file-server:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
-CODEAPI_EGRESS_GATEWAY_IMAGE=ghcr.io/librechat-ai/code-interpreter-egress-gateway:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
-CODEAPI_TOOL_CALL_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-tool-call-server:sha-2fa9f0d43e8e38b7d6240bc76e2483c6a47c64c7
+CODEAPI_API_IMAGE=ghcr.io/librechat-ai/code-interpreter-api:sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
+CODEAPI_WORKER_IMAGE=ghcr.io/librechat-ai/code-interpreter-worker:sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
+CODEAPI_FILE_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-file-server:sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
+CODEAPI_EGRESS_GATEWAY_IMAGE=ghcr.io/librechat-ai/code-interpreter-egress-gateway:sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
+CODEAPI_TOOL_CALL_SERVER_IMAGE=ghcr.io/librechat-ai/code-interpreter-tool-call-server:sha-4b41f3a97d9cafaf11498b62b1ec6cb9e91c68f0
 
 # 自前ビルド Sandbox Runner（GitHub Actions CI より GHCR へ自動公開）
 # KVM 対応ホスト用 (MicroVM)
-SANDBOX_RUNNER_KVM_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:2fa9f0d-ja1
+SANDBOX_RUNNER_KVM_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner:4b41f3a-ja1
 # 非KVM ホスト用 (NsJail Direct)
-SANDBOX_RUNNER_DIRECT_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:2fa9f0d-ja1
+SANDBOX_RUNNER_DIRECT_IMAGE=ghcr.io/chottokun/librechat-rce-stack/sandbox-runner-direct:4b41f3a-ja1
 
 # LibreChat コア（Ed25519 JWT 対応済み 安定版）
 LIBRECHAT_IMAGE=ghcr.io/danny-avila/librechat:v0.8.8-rc4
