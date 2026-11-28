@@ -156,6 +156,9 @@ plt.show()
 - チャット画面上に棒グラフの画像が出力されること。
 - タイトル「プロジェクト工数配分（日本語ネイティブ描画）」、横軸「企画・開発・テスト・運用」、縦軸「工数比率 (%)」が**豆腐（□□□）にならず、美麗なゴシック体で表示されること**。
 
+> **Tips / 注意事項:**
+> matplotlib は標準設定で `DejaVu Sans`（英数字フォント）を優先探索するため、コード内でフォントが明示されない場合、環境によっては日本語グリフ警告が発生することがあります。コード側で `plt.rcParams['font.family'] = 'Noto Sans CJK JP'` を指定するか、後述の `japanize-matplotlib` を import することで確実に美麗な日本語描画が保証されます。実運用では [運用・保守ガイド](maintenance.md#4-デフォルトシステムプロンプトプリセットの推奨設定-model-specs--custom-instructions) に記載の Model Specs / Custom Instructions を設定しておくことを強く推奨します。
+
 ---
 
 ### テスト 4: `japanize-matplotlib` 併用描画
